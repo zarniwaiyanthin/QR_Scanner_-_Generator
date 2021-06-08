@@ -1,4 +1,4 @@
-package com.example.qrscannerandgenerator
+package com.example.qr_scanner_and_generator
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -11,11 +11,11 @@ class PagerAdapter(fragment: Fragment):FragmentStateAdapter(fragment) {
     }
 
     override fun createFragment(position: Int): Fragment {
-        if(position==0){
-            return ScannerFragment()
+        return if(position==0){
+            ScannerFragment()
         }
         else{
-            return GeneratorFragment()
+            GeneratorFragment()
         }
     }
 }
