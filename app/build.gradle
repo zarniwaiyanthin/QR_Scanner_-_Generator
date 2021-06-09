@@ -53,4 +53,8 @@ dependencies {
 
     // google vision library
     implementation 'com.google.android.gms:play-services-vision:11.0.2'
+
+    // QR Code Generator
+    implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.4'
+    implementation 'com.google.zxing:core:3.3.2'
 }
