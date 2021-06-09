@@ -3,6 +3,7 @@ package com.example.qr_scanner_and_generator
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Point
 import android.os.Bundle
 import android.os.Environment
 import android.view.*
@@ -15,6 +16,7 @@ import com.google.zxing.WriterException
 import kotlinx.android.synthetic.main.fragment_generator.*
 import java.io.File
 import java.nio.file.Path
+import android.view.WindowManager as WindowManager1
 
 @Suppress("DEPRECATION")
 class GeneratorFragment: Fragment() {
@@ -34,10 +36,20 @@ class GeneratorFragment: Fragment() {
         btnGQR.setOnClickListener {
 
             str=etTxt2QR.text.toString()
+
+            val display=context?.display
+            val point=Point()
+            display?.getSize(point)
+
+            val width=point.x
+            val height=point.y
+            var dimen= if (width<height) width else height
+            dimen=dimen*3/4
+
             if (str==""){
                 Toast.makeText(context, "Please input text", Toast.LENGTH_SHORT).show()
             }else{
-                val qrgEncoder=QRGEncoder(str,null,QRGContents.Type.TEXT,1000)
+                val qrgEncoder=QRGEncoder(str,null,QRGContents.Type.TEXT,dimen)
                 try {
                     bitmap=qrgEncoder.bitmap
                     ivQR.setImageBitmap(bitmap)

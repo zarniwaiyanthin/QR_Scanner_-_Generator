@@ -1,15 +1,23 @@
 package com.example.qr_scanner_and_generator
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.qr_scanner_and_generator.GoogleActivity.Companion.code
+import com.google.zxing.BinaryBitmap
+import com.google.zxing.MultiFormatReader
+import com.google.zxing.NotFoundException
+import com.google.zxing.RGBLuminanceSource
+import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.android.synthetic.main.fragment_scanner.*
+import java.io.FileNotFoundException
 
 class ScannerFragment :Fragment(){
     override fun onCreateView(
@@ -23,6 +31,7 @@ class ScannerFragment :Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val intentIntegrator=IntentIntegrator.forSupportFragment(this)
+
         btnZxing.setOnClickListener {
             intentIntegrator.setPrompt("Scan Barcode or QR Code")
             intentIntegrator.setOrientationLocked(false)
@@ -34,11 +43,20 @@ class ScannerFragment :Fragment(){
         if (code!=null){
             tvScanResult.text= code
         }
+
+        btnSFG.setOnClickListener {
+            val intent=Intent(Intent.ACTION_PICK)
+            intent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*")
+            startActivityForResult(intent,1111)
+        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         val intentResult=IntentIntegrator.parseActivityResult(requestCode,resultCode,data)
+
         if (intentResult!=null){
             if (intentResult.contents==null){
                 Toast.makeText(context, "Cancelled", Toast.LENGTH_SHORT).show()
@@ -48,6 +66,48 @@ class ScannerFragment :Fragment(){
             }
         }else{
             super.onActivityResult(requestCode, resultCode, data)
+        }
+
+        if(requestCode==1111){
+            if (data==null || data?.data==null){
+                Log.d("tag","The uri is null, probably the user cancelled the image selection process using the back button.")
+            }
+
+            val  uri= data?.data
+
+            try {
+                val getContentResolver=context?.contentResolver
+                val inputStream= uri?.let { getContentResolver?.openInputStream(it) }
+                val bitmap=BitmapFactory.decodeStream(inputStream)
+
+                if (bitmap==null){
+                     Log.d("TAG", "uri is not a bitmap," + uri.toString())
+                }
+
+                val width=bitmap.width
+                val height=bitmap.height
+                val pixels= intArrayOf(width*height)
+
+                bitmap.getPixels(pixels,0,width,0,0,width,height)
+                bitmap.recycle()
+
+                val source=RGBLuminanceSource(width,height,pixels)
+                val bBitmap=BinaryBitmap(HybridBinarizer(source))
+                val reader=MultiFormatReader()
+
+                try{
+
+                    val result=reader.decode(bBitmap)
+                    tvScanResult.text=result.text
+
+                    }catch (e:NotFoundException){
+                       Log.d("TAG", "decode exception", e)
+                    }
+
+                }catch (e:FileNotFoundException){
+                    Log.e("TAG", "can not open file" + uri.toString(), e);
+                }
+
         }
     }
 }
