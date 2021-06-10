@@ -1,8 +1,10 @@
 package com.example.qr_scanner_and_generator
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -46,10 +48,10 @@ class ScannerFragment :Fragment(){
 
         btnSFG.setOnClickListener {
             val intent=Intent(Intent.ACTION_PICK)
-            intent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*")
+            intent.type="image/*"
+//            intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*")
             startActivityForResult(intent,1111)
         }
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -68,29 +70,35 @@ class ScannerFragment :Fragment(){
             super.onActivityResult(requestCode, resultCode, data)
         }
 
-        if(requestCode==1111){
-            if (data==null || data?.data==null){
-                Log.d("tag","The uri is null, probably the user cancelled the image selection process using the back button.")
+        if (resultCode!=Activity.RESULT_CANCELED){
+            if(requestCode==1111){
+                decodeQR(data)
+            }
+        }
+    }
+
+    private fun decodeQR(data: Intent?){
+        if (data==null || data?.data==null){
+            Log.d("tag","The uri is null, probably the user cancelled the image selection process using the back button.")
+        }
+
+        val  uri= data?.data
+
+            val getContentResolver=context?.contentResolver
+            val inputStream= uri?.let { getContentResolver?.openInputStream(it) }
+            val bitmap=BitmapFactory.decodeStream(inputStream)
+
+            if (bitmap==null){
+                Log.d("TAG", "uri is not a bitmap," + uri.toString())
             }
 
-            val  uri= data?.data
+            val width=bitmap.width
+            val height=bitmap.height
+            val pixels= IntArray(width*height)
 
             try {
-                val getContentResolver=context?.contentResolver
-                val inputStream= uri?.let { getContentResolver?.openInputStream(it) }
-                val bitmap=BitmapFactory.decodeStream(inputStream)
-
-                if (bitmap==null){
-                     Log.d("TAG", "uri is not a bitmap," + uri.toString())
-                }
-
-                val width=bitmap.width
-                val height=bitmap.height
-                val pixels= intArrayOf(width*height)
-
                 bitmap.getPixels(pixels,0,width,0,0,width,height)
                 bitmap.recycle()
-
                 val source=RGBLuminanceSource(width,height,pixels)
                 val bBitmap=BinaryBitmap(HybridBinarizer(source))
                 val reader=MultiFormatReader()
@@ -100,14 +108,12 @@ class ScannerFragment :Fragment(){
                     val result=reader.decode(bBitmap)
                     tvScanResult.text=result.text
 
-                    }catch (e:NotFoundException){
-                       Log.d("TAG", "decode exception", e)
-                    }
-
-                }catch (e:FileNotFoundException){
-                    Log.e("TAG", "can not open file" + uri.toString(), e);
+                }catch (e:NotFoundException){
+                    Log.d("TAG", "decode exception", e)
                 }
 
-        }
+            }catch (e:FileNotFoundException){
+                Log.e("TAG", "can not open file" + uri.toString(), e);
+            }
     }
 }
