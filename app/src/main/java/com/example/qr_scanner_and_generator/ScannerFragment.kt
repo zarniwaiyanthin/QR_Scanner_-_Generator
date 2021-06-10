@@ -3,6 +3,7 @@ package com.example.qr_scanner_and_generator
 import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -20,6 +21,7 @@ import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.android.synthetic.main.fragment_scanner.*
 import java.io.FileNotFoundException
+import java.util.regex.Pattern
 
 class ScannerFragment :Fragment(){
     override fun onCreateView(
@@ -43,7 +45,9 @@ class ScannerFragment :Fragment(){
             startActivity(context?.let { context -> GoogleActivity.newIntent(context) })
         }
         if (code!=null){
-            tvScanResult.text= code
+            if (!isLink(code.toString())){
+                tvScanResult.text= code
+            }
         }
 
         btnSFG.setOnClickListener {
@@ -63,8 +67,10 @@ class ScannerFragment :Fragment(){
             if (intentResult.contents==null){
                 Toast.makeText(context, "Cancelled", Toast.LENGTH_SHORT).show()
             }else{
-                tvScanResult.text=intentResult.contents
-                tvFormat.text=intentResult.formatName
+                if (!isLink(intentResult.contents)){
+                    tvScanResult.text=intentResult.contents
+                    tvFormat.text=intentResult.formatName
+                }
             }
         }else{
             super.onActivityResult(requestCode, resultCode, data)
@@ -105,8 +111,11 @@ class ScannerFragment :Fragment(){
 
                 try{
 
-                    val result=reader.decode(bBitmap)
-                    tvScanResult.text=result.text
+                    val decode=reader.decode(bBitmap)
+                    val result=decode.text
+                    if (!isLink(result)){
+                        tvScanResult.text=result
+                    }
 
                 }catch (e:NotFoundException){
                     Log.d("TAG", "decode exception", e)
@@ -115,5 +124,19 @@ class ScannerFragment :Fragment(){
             }catch (e:FileNotFoundException){
                 Log.e("TAG", "can not open file" + uri.toString(), e);
             }
+    }
+
+    private fun isLink(test:String):Boolean{
+        var bool=true
+        val urlCheck="^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?$"
+        val p=Pattern.compile(urlCheck)
+        val m=p.matcher(test)
+        if (m.find()){
+            val browserIntent=Intent(Intent.ACTION_VIEW, Uri.parse(test))
+            startActivity(browserIntent)
+        }else{
+            bool=false
+        }
+        return bool
     }
 }
