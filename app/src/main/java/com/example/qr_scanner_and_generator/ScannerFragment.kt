@@ -88,8 +88,7 @@ class ScannerFragment :Fragment(){
             Log.d("tag","The uri is null, probably the user cancelled the image selection process using the back button.")
         }
 
-        val  uri= data?.data
-
+            val  uri= data?.data
             val getContentResolver=context?.contentResolver
             val inputStream= uri?.let { getContentResolver?.openInputStream(it) }
             val bitmap=BitmapFactory.decodeStream(inputStream)

@@ -18,6 +18,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+
     buildTypes {
         release {
             minifyEnabled false
@@ -57,4 +58,5 @@ dependencies {
     // QR Code Generator
     implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.4'
     implementation 'com.google.zxing:core:3.3.2'
+
 }
