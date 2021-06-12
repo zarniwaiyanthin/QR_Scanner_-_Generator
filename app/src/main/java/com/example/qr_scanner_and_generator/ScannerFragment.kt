@@ -40,9 +40,11 @@ class ScannerFragment :Fragment(){
             intentIntegrator.setPrompt("Scan Barcode or QR Code")
             intentIntegrator.setOrientationLocked(false)
             intentIntegrator.initiateScan()
+            activity?.supportFragmentManager?.popBackStack()
         }
         btnGoogle.setOnClickListener {
             startActivity(context?.let { context -> GoogleActivity.newIntent(context) })
+            activity?.supportFragmentManager?.popBackStack()
         }
         if (code!=null){
             if (!isLink(code.toString())){
@@ -55,6 +57,7 @@ class ScannerFragment :Fragment(){
             intent.type="image/*"
 //            intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*")
             startActivityForResult(intent,1111)
+            activity?.supportFragmentManager?.popBackStack()
         }
     }
 

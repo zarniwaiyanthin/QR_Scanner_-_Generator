@@ -25,6 +25,7 @@ import java.io.File
 @Suppress("DEPRECATION")
 class GeneratorFragment: Fragment() {
     companion object{
+        var bitmap: Bitmap? = null
         var text:String=""
     }
 
@@ -42,24 +43,27 @@ class GeneratorFragment: Fragment() {
         btnGQR.setOnClickListener {
 
             val str = etTxt2QR.text.toString()
-
-     /*       val display=context?.display
-            val point=Point()
-            display?.getSize(point)
-
-            val width=point.x
-            val height=point.y
-            var dimen= if (width<height) width else height
-            dimen=dimen*3/4*/
-
             if (str == "") {
                 Toast.makeText(context, "Please input text", Toast.LENGTH_SHORT).show()
             } else {
-                 text=str
+                 generateQR(str)
                  val intent= context?.let { context -> ImageActivity.newIntent(context) }
                 intent?.putExtra("text",str)
                 startActivity(intent)
+                activity?.supportFragmentManager?.popBackStack()
             }
         }
     }
+
+    private fun generateQR(str:String):Bitmap?{
+        val qrgEncoder = QRGEncoder(str, null, QRGContents.Type.TEXT, 720)
+        try {
+            bitmap = qrgEncoder.bitmap
+            text=str
+        } catch (e: WriterException) {
+            Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
+        }
+        return bitmap
+    }
+
 }
