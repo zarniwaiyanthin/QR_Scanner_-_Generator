@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.qr_scanner_and_generator.GoogleActivity.Companion.code
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.NotFoundException
@@ -34,31 +33,34 @@ class ScannerFragment :Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val intentIntegrator=IntentIntegrator.forSupportFragment(this)
 
         btnZxing.setOnClickListener {
-            intentIntegrator.setPrompt("Scan Barcode or QR Code")
-            intentIntegrator.setOrientationLocked(false)
-            intentIntegrator.initiateScan()
-            activity?.supportFragmentManager?.popBackStack()
+            scanWithZxing()
         }
         btnGoogle.setOnClickListener {
-            startActivity(context?.let { context -> GoogleActivity.newIntent(context) })
-            activity?.supportFragmentManager?.popBackStack()
-        }
-        if (code!=null){
-            if (!isLink(code.toString())){
-                tvScanResult.text= code
-            }
+            scanWithGoogle()
         }
 
         btnSFG.setOnClickListener {
-            val intent=Intent(Intent.ACTION_PICK)
-            intent.type="image/*"
-//            intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*")
-            startActivityForResult(intent,1111)
-            activity?.supportFragmentManager?.popBackStack()
+            scanFromGallery()
         }
+    }
+
+    private fun scanWithZxing(){
+        val intentIntegrator=IntentIntegrator.forSupportFragment(this)
+        intentIntegrator.setPrompt("Scan Barcode or QR Code")
+        intentIntegrator.setOrientationLocked(false)
+        intentIntegrator.initiateScan()
+    }
+
+    private fun scanWithGoogle(){
+        startActivity(context?.let { context -> GoogleActivity.newIntent(context) })
+    }
+
+    private fun scanFromGallery(){
+        val intent=Intent(Intent.ACTION_PICK)
+        intent.type="image/*"
+        startActivityForResult(intent,1111)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -71,8 +73,8 @@ class ScannerFragment :Fragment(){
                 Toast.makeText(context, "Cancelled", Toast.LENGTH_SHORT).show()
             }else{
                 if (!isLink(intentResult.contents)){
-                    tvScanResult.text=intentResult.contents
-                    tvFormat.text=intentResult.formatName
+                    TextActivity.string=intentResult.contents
+                    startActivity(context?.let { TextActivity.newIntent(it) })
                 }
             }
         }else{
@@ -116,7 +118,8 @@ class ScannerFragment :Fragment(){
                     val decode=reader.decode(bBitmap)
                     val result=decode.text
                     if (!isLink(result)){
-                        tvScanResult.text=result
+                        TextActivity.string=result
+                        startActivity(context?.let { TextActivity.newIntent(it) })
                     }
 
                 }catch (e:NotFoundException){
