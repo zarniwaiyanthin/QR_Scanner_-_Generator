@@ -12,6 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.common.GooglePlayServicesUtil
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.NotFoundException
@@ -34,8 +37,11 @@ class ScannerFragment :Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        var userChoice:Int=0
+
         btnZxing.setOnClickListener {
-            scanWithZxing()
+        //    scanWithZxing()
+            scanFromDevice()
         }
         btnGoogle.setOnClickListener {
             scanWithGoogle()
@@ -44,6 +50,12 @@ class ScannerFragment :Fragment(){
         btnSFG.setOnClickListener {
             scanFromGallery()
         }
+
+        when (rgSelect.checkedRadioButtonId){
+            R.id.rbGallery-> Toast.makeText(context, "Gallery", Toast.LENGTH_SHORT).show()
+            R.id.rbCamera-> Toast.makeText(context, "Camera", Toast.LENGTH_SHORT).show()
+        }
+
     }
 
     private fun scanWithZxing(){
@@ -55,6 +67,17 @@ class ScannerFragment :Fragment(){
 
     private fun scanWithGoogle(){
         startActivity(context?.let { context -> GoogleActivity.newIntent(context) })
+    }
+
+    private fun scanFromDevice(){
+        val status=GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context)
+        if (status==ConnectionResult.SUCCESS){
+    //        scanWithGoogle()
+            Toast.makeText(context, "This device has google service.", Toast.LENGTH_SHORT).show()
+        }else{
+     //       scanWithZxing()
+            Toast.makeText(context, "This device has no google service.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun scanFromGallery(){

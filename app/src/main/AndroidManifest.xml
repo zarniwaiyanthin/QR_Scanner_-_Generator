@@ -14,7 +14,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.QR_Scanner_and_Generator">
+        android:theme="@style/Theme.QR_Scanner_and_Generator"
+        android:requestLegacyExternalStorage="true">
 
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"

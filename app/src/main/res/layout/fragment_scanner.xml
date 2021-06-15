@@ -39,4 +39,26 @@
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnGoogle" />
+
+    <RadioGroup
+        android:id="@+id/rgSelect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/btnSFG"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnGoogle">
+
+        <RadioButton
+            android:id="@+id/rbCamera"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Scan By Camera" />
+
+        <RadioButton
+            android:id="@+id/rbGallery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Scan From Gallery" />
+    </RadioGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,9 +4,12 @@ import android.app.Notification
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.media.MediaScannerConnection
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
@@ -46,7 +49,11 @@ class ImageActivity:AppCompatActivity() {
 
 
     private fun saveQR(text:String){
-        val dir = File(Environment.getExternalStorageDirectory(), "QR Codes")
+        val dir= if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q){
+            File(getExternalFilesDir(null),"QR Codes")
+        }else{
+            File(Environment.getExternalStorageDirectory(),"QR Codes")
+        }
         val path = "$dir/"
         val f = File(path, "$text.jpg")
         galleryAddPic(f)
@@ -60,6 +67,6 @@ class ImageActivity:AppCompatActivity() {
     }
 
     private fun galleryAddPic(f:File){
-        this?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(f)))
+        MediaScannerConnection.scanFile(this, arrayOf(f.toString()),null,null)
     }
 }

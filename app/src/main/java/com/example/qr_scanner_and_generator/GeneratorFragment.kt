@@ -50,7 +50,6 @@ class GeneratorFragment: Fragment() {
                  val intent= context?.let { context -> ImageActivity.newIntent(context) }
                 intent?.putExtra("text",str)
                 startActivity(intent)
-                activity?.supportFragmentManager?.popBackStack()
             }
         }
     }
