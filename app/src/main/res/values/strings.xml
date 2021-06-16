@@ -4,4 +4,6 @@
     <string name="text_2_qr">Text 2 QR</string>
     <string name="save_to_device">Save to Device</string>
     <string name="scan_text">Scan Text</string>
+    <string name="scan_by_camera">Scan By Camera</string>
+    <string name="scan_from_gallery">Scan From Gallery</string>
 </resources>

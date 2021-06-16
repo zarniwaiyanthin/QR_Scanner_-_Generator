@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import kotlinx.android.synthetic.main.activity_text.*
@@ -30,5 +31,6 @@ class TextActivity:AppCompatActivity() {
         val clipboard=getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip=ClipData.newPlainText("QR",text)
         clipboard.setPrimaryClip(clip)
+        Toast.makeText(this, "Copied to Clipboard", Toast.LENGTH_SHORT).show()
     }
 }

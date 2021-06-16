@@ -26,7 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/maven_pro"
-            android:hint="@string/text_2_qr" />
+            android:hint="@string/text_2_qr"
+            android:textSize="24sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -37,28 +38,31 @@
         android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:src="@drawable/ic_baseline_qr_code_24"
-        app:maxImageSize="110dp"
-        app:fabCustomSize="140dp"
-        app:tint="@color/white"
         android:backgroundTint="?attr/colorPrimary"
+        android:src="@drawable/ic_baseline_qr_code_24"
         android:textAllCaps="false"
+        app:fabCustomSize="140dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/containerTxt2QR" />
+        app:layout_constraintTop_toBottomOf="@+id/containerTxt2QR"
+        app:layout_constraintVertical_bias="0.42000002"
+        app:maxImageSize="110dp"
+        app:tint="@color/white" />
 
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:fontFamily="@font/maven_pro"
         android:text="Press to Generate a QR Code"
+        android:textColor="#979292"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnGQR"
-        app:layout_constraintVertical_bias="0.16000003" />
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

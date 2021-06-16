@@ -26,16 +26,4 @@
         app:tint="@color/white"
         android:backgroundTint="?attr/colorPrimary" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabShare"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:backgroundTint="?attr/colorPrimary"
-        android:src="@drawable/ic_baseline_share_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/fabSave"
-        app:tint="@color/white" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
