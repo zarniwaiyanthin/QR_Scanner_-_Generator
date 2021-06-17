@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.qr_scanner_and_generator.Util.isGoogle
+import com.example.qr_scanner_and_generator.Util.isLink
+import com.example.qr_scanner_and_generator.Util.openBrowser
+import com.example.qr_scanner_and_generator.Util.string
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.zxing.BinaryBitmap
@@ -22,9 +25,9 @@ import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.android.synthetic.main.fragment_scanner.*
 import java.io.FileNotFoundException
-import java.util.regex.Pattern
 
 class ScannerFragment :Fragment(){
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,10 +55,14 @@ class ScannerFragment :Fragment(){
         fabScan.setOnClickListener {
                 when (rgSelect.checkedRadioButtonId) {
                     R.id.rbGallery -> scanFromGallery()
-
-                    R.id.rbCamera -> scanFromCamera()
+                    R.id.rbCamera -> scanByCamera()
                     else-> Toast.makeText(context, "Do you want to scan from gallery or camera?", Toast.LENGTH_SHORT).show()
                 }
+        }
+
+        if (isGoogle){
+            TextFragment().show(parentFragmentManager,"text")
+            isGoogle=false
         }
     }
 
@@ -70,10 +77,11 @@ class ScannerFragment :Fragment(){
         startActivity(context?.let { context -> GoogleActivity.newIntent(context) })
     }
 
-    private fun scanFromCamera(){
+    private fun scanByCamera(){
         val status=GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context)
         if (status==ConnectionResult.SUCCESS){
             scanWithGoogle()
+            isGoogle=true
         }else{
             scanWithZxing()
         }
@@ -94,9 +102,11 @@ class ScannerFragment :Fragment(){
             if (intentResult.contents==null){
                 Toast.makeText(context, "Cancelled", Toast.LENGTH_SHORT).show()
             }else{
-                if (!isLink(intentResult.contents)){
-                    TextActivity.string=intentResult.contents
-                    startActivity(context?.let { TextActivity.newIntent(it) })
+                if (isLink(intentResult.contents)){
+                    context?.let { openBrowser(intentResult.contents, it) }
+                }else{
+                    string=intentResult.contents
+                    TextFragment().show(parentFragmentManager,"text")
                 }
             }
         }else{
@@ -109,6 +119,7 @@ class ScannerFragment :Fragment(){
             }
         }
     }
+
 
     private fun decodeQR(data: Intent?){
         if (data==null || data?.data==null){
@@ -139,9 +150,11 @@ class ScannerFragment :Fragment(){
 
                     val decode=reader.decode(bBitmap)
                     val result=decode.text
-                    if (!isLink(result)){
-                        TextActivity.string=result
-                        startActivity(context?.let { TextActivity.newIntent(it) })
+                    if (isLink(result)){
+                        context?.let { openBrowser(result, it) }
+                    }else{
+                        string=result
+                        TextFragment().show(parentFragmentManager,"text")
                     }
 
                 }catch (e:NotFoundException){
@@ -151,19 +164,5 @@ class ScannerFragment :Fragment(){
             }catch (e:FileNotFoundException){
                 Log.e("TAG", "can not open file" + uri.toString(), e);
             }
-    }
-
-    private fun isLink(test:String):Boolean{
-        var bool=true
-        val urlCheck="^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?$"
-        val p=Pattern.compile(urlCheck)
-        val m=p.matcher(test)
-        if (m.find()){
-            val browserIntent=Intent(Intent.ACTION_VIEW, Uri.parse(test))
-            startActivity(browserIntent)
-        }else{
-            bool=false
-        }
-        return bool
     }
 }

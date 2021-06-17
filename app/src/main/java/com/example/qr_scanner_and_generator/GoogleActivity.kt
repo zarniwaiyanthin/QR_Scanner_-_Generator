@@ -1,5 +1,8 @@
 package com.example.qr_scanner_and_generator
 
+import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -8,8 +11,15 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.util.SparseArray
+import android.view.Window
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
+import com.example.qr_scanner_and_generator.Util.isLink
+import com.example.qr_scanner_and_generator.Util.openBrowser
+import com.example.qr_scanner_and_generator.Util.string
 import com.google.android.gms.vision.barcode.Barcode
 import info.bideens.barcode.BarcodeReader
 import java.util.regex.Pattern
@@ -43,30 +53,18 @@ class GoogleActivity:AppCompatActivity(), BarcodeReader.BarcodeReaderListener {
         Log.d("google",barcode?.displayValue?:"Empty")
         barcodeReader.playBeep()
         val result=barcode?.displayValue?:"N/A"
-        if (!isLink(result)){
-            TextActivity.string=barcode?.displayValue?:"N/A"
-            startActivity(TextActivity.newIntent(this))
+        if (isLink(result)){
+            openBrowser(result,this)
+            finish()
+        }else{
+            string=result
+            startActivity(MainActivity.newIntent(this))
             finish()
         }
     }
 
     override fun onScanError(errorMessage: String?) {
         Log.d("google",errorMessage?:"Unknown")
-    }
-
-    private fun isLink(test:String):Boolean{
-        var bool=true
-        val urlCheck="^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?$"
-        val p= Pattern.compile(urlCheck)
-        val m=p.matcher(test)
-        if (m.find()){
-            val browserIntent=Intent(Intent.ACTION_VIEW, Uri.parse(test))
-            startActivity(browserIntent)
-            finish()
-        }else{
-            bool=false
-        }
-        return bool
     }
 
 }
