@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QR_Scanner_and_Generator</string>
+    <string name="app_name">QR Pro</string>
     <string name="generate_qr">Generate QR</string>
     <string name="text_2_qr">Text 2 QR</string>
     <string name="save_to_device">Save to Device</string>

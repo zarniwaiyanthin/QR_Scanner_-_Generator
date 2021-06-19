@@ -29,8 +29,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".GoogleActivity" />
-        <activity android:name=".ImageFragment" />
-        <activity android:name=".TextFragment"/>
 
         <meta-data
             android:name="preloaded_fonts"
